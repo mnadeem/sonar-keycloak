@@ -29,6 +29,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.HttpHeaders;
 import org.sonar.api.web.ServletFilter;
 
 /**
@@ -52,6 +53,9 @@ public final class KeycloakAuthenticationFilter extends ServletFilter {
 	}
 
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+		HttpServletRequest request = (HttpServletRequest) servletRequest;
+		request.getSession().setAttribute(KeycloakClient.REFERER_ATTRIBUTE, request.getHeader(HttpHeaders.REFERER));
+
 		((HttpServletResponse) servletResponse).sendRedirect(this.keycloakClient.getAuthUrl((HttpServletRequest) servletRequest));
 	}
 

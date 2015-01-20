@@ -71,7 +71,13 @@ public final class KeycloakValidationFilter extends ServletFilter {
 			httpResponse.sendRedirect(KeycloakClient.SONAR_UN_AUTHORIZED_URL);
 		} else {
 			request.setAttribute(KeycloakClient.KEYCLOAK_USER_ATTRIBUTE, user);
+			String referer = (String)httpRequest.getSession().getAttribute(KeycloakClient.REFERER_ATTRIBUTE);
 			filterChain.doFilter(request, response);
+			if (referer!=null) {
+				httpResponse.sendRedirect(referer);
+			} else {
+				httpResponse.sendRedirect("/");
+			}
 		}
 	}
 

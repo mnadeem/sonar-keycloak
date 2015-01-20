@@ -41,6 +41,7 @@ import org.sonar.api.security.UserDetails;
 
 public class KeycloakClient implements ServerExtension {
 	
+	public static final String REFERER_ATTRIBUTE = KeycloakClient.class.getName() + ".referer";
 	private static final Logger LOGGER = LoggerFactory.getLogger(KeycloakClient.class);
 	
 	private static final String KEYCLOAK_SERVER_URL = "sonar.keycloak.auth.serverlUrl";
@@ -101,6 +102,9 @@ public class KeycloakClient implements ServerExtension {
 	}
 	
 	private String getSslRequired() {
+		return sonarSettings.getString(KEYCLOAK_SSL_REQUIRED);
+	}
+	public String getSonarUrl() {
 		return sonarSettings.getString(KEYCLOAK_SSL_REQUIRED);
 	}
 
