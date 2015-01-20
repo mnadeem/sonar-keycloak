@@ -49,6 +49,7 @@ public final class KeycloakPlugin extends SonarPlugin {
         Preconditions.checkState(settings.getBoolean("sonar.authenticator.createUsers"), "Property sonar.authenticator.createUsers must be set to true.");
         extensions.add(KeycloakSecurityRealm.class);
         extensions.add(KeycloakAuthenticator.class);
+        extensions.add(KeycloakClient.class);
         extensions.add(KeycloakValidationFilter.class);
         extensions.add(KeycloakAuthenticationFilter.class);
       }

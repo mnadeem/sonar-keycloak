@@ -26,33 +26,35 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.sonar.api.web.ServletFilter;
 
 /**
- * Requests to login form (/sessions/new) are redirected to the OpenID form
- * hosted on the identity provider, for example Google.
+ * Requests to login form (/sessions/new) are redirected to the Keycloak
  */
 public final class KeycloakAuthenticationFilter extends ServletFilter {
 
+	private KeycloakClient keycloakClient;
 
-  public KeycloakAuthenticationFilter() {
+	public KeycloakAuthenticationFilter(KeycloakClient keycloakClient) {
+		this.keycloakClient = keycloakClient;
+	}
 
-  }
+	@Override
+	public UrlPattern doGetPattern() {
+		return UrlPattern.create("/sessions/new");
+	}
 
-  @Override
-  public UrlPattern doGetPattern() {
-    return UrlPattern.create("/sessions/new");
-  }
+	public void init(FilterConfig filterConfig) throws ServletException {
 
-  public void init(FilterConfig filterConfig) throws ServletException {
-  }
+	}
 
-  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-    
-    //((HttpServletResponse) servletResponse).sendRedirect(authRequest.getDestinationUrl(true));
-  }
+	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+		((HttpServletResponse) servletResponse).sendRedirect(this.keycloakClient.getAuthUrl((HttpServletRequest) servletRequest));
+	}
 
-  public void destroy() {
-  }
+	public void destroy() {
+	}
 }
