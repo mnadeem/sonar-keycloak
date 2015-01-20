@@ -26,6 +26,6 @@ public final class KeycloakUserProvider extends ExternalUsersProvider {
 
   @Override
   public UserDetails doGetUserDetails(Context context) {
-    return (UserDetails) context.getRequest().getAttribute("openid_user");
+    return (UserDetails) context.getRequest().getAttribute(KeycloakClient.KEYCLOAK_USER_ATTRIBUTE);
   }
 }

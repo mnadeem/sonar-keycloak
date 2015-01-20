@@ -27,48 +27,51 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.sonar.api.security.UserDetails;
 import org.sonar.api.web.ServletFilter;
 
 /**
- * Validate tokens forwarded by the OpenID provider after the request initiated by {@link KeycloakAuthenticationFilter}.
+ * Validate tokens forwarded by the keyclaok  after the request initiated by {@link KeycloakAuthenticationFilter}.
  * If authenfication is successful, then object of type UserDetails is added to request attributes.
  */
 public final class KeycloakValidationFilter extends ServletFilter {
 
-  static final String USER_ATTRIBUTE = "openid_user";
+	private KeycloakClient keycloakClient;
 
-  public KeycloakValidationFilter() {
+	public KeycloakValidationFilter(KeycloakClient keycloakClient) {
+		this.keycloakClient = keycloakClient;
+	}
 
-  }
+	@Override
+	public UrlPattern doGetPattern() {
+		return UrlPattern.create(KeycloakClient.SONAR_VALIDATE_URL);
+	}
 
-  @Override
-  public UrlPattern doGetPattern() {
-    return UrlPattern.create("/openid/validate");
-  }
+	public void init(FilterConfig filterConfig) throws ServletException {
+	}
 
-  public void init(FilterConfig filterConfig) throws ServletException {
-  }
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+	    HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-    HttpServletRequest httpRequest = (HttpServletRequest) request;
+		
+		UserDetails user = null;
+		try {
+			user = this.keycloakClient.getUser(httpRequest);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (user == null) {
+			httpResponse.sendRedirect(KeycloakClient.SONAR_UN_AUTHORIZED_URL);
+		} else {
+			request.setAttribute(KeycloakClient.KEYCLOAK_USER_ATTRIBUTE, user);
+			filterChain.doFilter(request, response);
+		}
+	}
 
-    StringBuffer receivingURL = httpRequest.getRequestURL();
-    String queryString = httpRequest.getQueryString();
-    if (StringUtils.isNotEmpty(queryString)) {
-      receivingURL.append("?").append(httpRequest.getQueryString());
-    }
-
-    UserDetails user = null;
-    if (user != null) {
-      request.setAttribute(USER_ATTRIBUTE, user);
-    }
-
-    filterChain.doFilter(request, response);
-  }
-
-  public void destroy() {
-  }
+	public void destroy() {
+	}
 }

@@ -25,7 +25,7 @@ public final class KeycloakAuthenticator extends Authenticator {
 
   @Override
   public boolean doAuthenticate(Context context) {
-    return context.getRequest().getAttribute(KeycloakValidationFilter.USER_ATTRIBUTE) != null;
+    return context.getRequest().getAttribute(KeycloakClient.KEYCLOAK_USER_ATTRIBUTE) != null;
   }
 
 }
