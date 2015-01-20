@@ -20,6 +20,7 @@
 		<bouncycastle.version>1.46</bouncycastle.version>
 		<jackson.version>1.9.9</jackson.version>
 		<jboss.logging.version>3.1.4.GA</jboss.logging.version>
+		<bouncycastle.version>1.46</bouncycastle.version>
 	</properties>
 
 	<inceptionYear>2012</inceptionYear>
@@ -76,6 +77,11 @@
 			<version>2.3.8</version>
 		</dependency>
 		<dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk16</artifactId>
+            <version>${bouncycastle.version}</version>
+        </dependency>
+		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-core-asl</artifactId>
 			<version>${jackson.version}</version>
@@ -126,8 +132,8 @@
 				<groupId>org.codehaus.sonar</groupId>
 				<artifactId>sonar-packaging-maven-plugin</artifactId>
 				<configuration>
-					<pluginName>Keycloak</pluginName>
-					<pluginClass>org.sonar.plugins.keycloak.KeycloakSecurityRealm</pluginClass>
+					<pluginName>keycloak</pluginName>
+					<pluginClass>org.sonar.plugins.keycloak.KeycloakPlugin</pluginClass>
 				</configuration>
 			</plugin>
 		</plugins>

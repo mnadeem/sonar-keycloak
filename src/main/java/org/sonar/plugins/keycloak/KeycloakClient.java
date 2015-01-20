@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
@@ -32,12 +33,16 @@ import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.IDToken;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.keycloak.util.KeycloakUriBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.ServerExtension;
 import org.sonar.api.config.Settings;
 import org.sonar.api.security.UserDetails;
 
 public class KeycloakClient implements ServerExtension {
-
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(KeycloakClient.class);
+	
 	private static final String KEYCLOAK_SERVER_URL = "sonar.keycloak.auth.serverlUrl";
 	private static final String KEYCLOAK_REALM = "sonar.keycloak.realm";
 	private static final String KEYCLOAK_REALM_PUBLIC_KEY = "sonar.keycloak.realm.publicKey";
@@ -114,7 +119,7 @@ public class KeycloakClient implements ServerExtension {
 		KeycloakUriBuilder builder = KeycloakUriBuilder.fromUri(request.getRequestURL().toString())
 				.replacePath(request.getContextPath())
 				.replaceQuery(null)
-				.path("/keycloak/validate");
+				.path(SONAR_VALIDATE_URL);
 		String redirect = builder.toTemplate();
 		return redirect;
 	}
@@ -122,9 +127,18 @@ public class KeycloakClient implements ServerExtension {
 	public UserDetails getUser(HttpServletRequest request) throws Exception {
 		String redirect = redirectUrl(request);
 		UserDetails userDetails = null;
+		
+		LOGGER.info("request.getParameter : " +request.getParameter("code"));
+		LOGGER.info("redirect : " +redirect);
 		AccessTokenResponse tokenResponse = ServerRequest.invokeAccessCodeToToken(keycloakDeployment, request.getParameter("code"), redirect, null);
 
+		ObjectMapper mapper = new ObjectMapper();
+
+		LOGGER.info(mapper.writeValueAsString(tokenResponse));
+
 		String idTokenString = tokenResponse.getIdToken();
+		
+		LOGGER.info("idTokenString : " +idTokenString);
 
 		if (idTokenString != null) {
 			JWSInput input = new JWSInput(idTokenString);
