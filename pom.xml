@@ -9,7 +9,7 @@
 		<relativePath>../parent</relativePath>
 	</parent>
 	<artifactId>sonar-keycloak-plugin</artifactId>
-	<version>1.0</version>
+	<version>0.1</version>
 	<packaging>sonar-plugin</packaging>
 	<name>Sonar Keycloak Plugin</name>
 
