@@ -52,6 +52,7 @@ public final class KeycloakPlugin extends SonarPlugin {
         extensions.add(KeycloakClient.class);
         extensions.add(KeycloakValidationFilter.class);
         extensions.add(KeycloakAuthenticationFilter.class);
+        extensions.add(KeycloakUserProvider.class);
       }
       return extensions;
     }

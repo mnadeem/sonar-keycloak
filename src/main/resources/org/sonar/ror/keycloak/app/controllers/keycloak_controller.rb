@@ -1,4 +1,4 @@
-class OpenidController < ApplicationController
+class KeycloakController < ApplicationController
 
   skip_before_filter :check_authentication
 
