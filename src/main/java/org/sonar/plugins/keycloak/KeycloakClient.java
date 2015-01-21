@@ -158,9 +158,9 @@ public class KeycloakClient implements ServerExtension {
 		throw new RuntimeException("Invalid User ");
 	}
 
-	public void logOut(HttpServletRequest request) {
+	public void logOut(String refreashToken) {
 		try {
-			ServerRequest.invokeLogout(this.keycloakDeployment, (String) request.getSession().getAttribute(REFREASH_TOKEN_ATTRIBUTE));			
+			ServerRequest.invokeLogout(this.keycloakDeployment, refreashToken);			
 		} catch (Exception e) {
 			LOGGER.error("Logout Exception ", e);
 		}	

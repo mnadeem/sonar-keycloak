@@ -66,4 +66,10 @@ public class KeycloakAuthentication  implements Serializable {
 	public String getRefreashToken() {
 		return refreashToken;
 	}
+
+	@Override
+	public String toString() {
+		return "KeycloakAuthentication [userName=" + userName + ", email="
+				+ email + ", roles=" + roles + "]";
+	}	
 }

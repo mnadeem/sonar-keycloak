@@ -39,7 +39,7 @@ import org.sonar.api.web.ServletFilter;
  */
 public final class KeycloakLogoutFilter extends ServletFilter {
 
-	static final Logger LOG = LoggerFactory.getLogger(KeycloakLogoutFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(KeycloakLogoutFilter.class);
 
 	private final KeycloakClient keycloakClient;
 
@@ -53,13 +53,23 @@ public final class KeycloakLogoutFilter extends ServletFilter {
 	}
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
-		this.keycloakClient.logOut(httpRequest);
+		this.keycloakClient.logOut(getRefreashToken(httpRequest));
 		HttpSession session = ((HttpServletRequest) request).getSession(false);
 		if (session != null) {
 			session.invalidate();
 		}
 		filterChain.doFilter(request, response);		
+	}
+
+	private String getRefreashToken(HttpServletRequest httpRequest) {
+		KeycloakAuthentication keycloakAuthentication = (KeycloakAuthentication) httpRequest.getSession().getAttribute(KeycloakClient.KEYCLOAK_AUTHENTICATION_ATTRIBUTE);
+		if (keycloakAuthentication != null) {
+			return keycloakAuthentication.getRefreashToken();
+		}
+		LOGGER.info("KeycloakAuthentication is null");
+		return null;
 	}
 
 	public void destroy() {

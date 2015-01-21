@@ -65,6 +65,7 @@ public final class KeycloakValidationFilter extends ServletFilter {
 		KeycloakAuthentication authentication = null;
 		try {
 			authentication = this.keycloakClient.getKeycloakAuthentication(httpRequest);
+			LOGGER.info("authentication : " + authentication);
 		} catch (Exception e) {
 			LOGGER.error("Can't get user ", e);
 		}
@@ -74,6 +75,7 @@ public final class KeycloakValidationFilter extends ServletFilter {
 			request.setAttribute(KeycloakClient.KEYCLOAK_AUTHENTICATION_ATTRIBUTE, authentication);
 			filterChain.doFilter(request, response);
 		}
+		httpRequest.getSession().setAttribute(KeycloakClient.KEYCLOAK_AUTHENTICATION_ATTRIBUTE, authentication);
 	}
 
 	public void destroy() {
