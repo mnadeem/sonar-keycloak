@@ -21,11 +21,15 @@ package org.sonar.plugins.keycloak;
 
 import org.sonar.api.security.ExternalUsersProvider;
 import org.sonar.api.security.UserDetails;
-
+/**
+ * 
+ * @author Mohammad Nadeem
+ *
+ */
 public final class KeycloakUserProvider extends ExternalUsersProvider {
 
   @Override
   public UserDetails doGetUserDetails(Context context) {
-    return (UserDetails) context.getRequest().getAttribute(KeycloakClient.KEYCLOAK_USER_ATTRIBUTE);
+    return ((KeycloakAuthentication) context.getRequest().getAttribute(KeycloakClient.KEYCLOAK_AUTHENTICATION_ATTRIBUTE)).toUserDetails();
   }
 }

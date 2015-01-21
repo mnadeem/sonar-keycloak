@@ -27,36 +27,45 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.web.ServletFilter;
-
 /**
- * Requests to login form (/sessions/new) are redirected to the Keycloak
  * 
  * @author Mohammad Nadeem
+ *
  */
-public final class KeycloakAuthenticationFilter extends ServletFilter {
+public final class KeycloakLogoutFilter extends ServletFilter {
 
-	private KeycloakClient keycloakClient;
+	static final Logger LOG = LoggerFactory.getLogger(KeycloakLogoutFilter.class);
 
-	public KeycloakAuthenticationFilter(KeycloakClient keycloakClient) {
+	private final KeycloakClient keycloakClient;
+
+	public KeycloakLogoutFilter(KeycloakClient keycloakClient) {
 		this.keycloakClient = keycloakClient;
 	}
 
 	@Override
 	public UrlPattern doGetPattern() {
-		return UrlPattern.create("/sessions/new");
+		return UrlPattern.create(KeycloakClient.SONAR_LOG_OUT_URL);
+	}
+
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		this.keycloakClient.logOut(httpRequest);
+		HttpSession session = ((HttpServletRequest) request).getSession(false);
+		if (session != null) {
+			session.invalidate();
+		}
+		filterChain.doFilter(request, response);		
+	}
+
+	public void destroy() {
 	}
 
 	public void init(FilterConfig filterConfig) throws ServletException {
 
-	}
-
-	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-		((HttpServletResponse) servletResponse).sendRedirect(this.keycloakClient.getAuthUrl((HttpServletRequest) servletRequest));
-	}
-
-	public void destroy() {
 	}
 }

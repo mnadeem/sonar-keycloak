@@ -26,21 +26,30 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.keycloak.OAuth2Constants;
+import org.keycloak.RSATokenVerifier;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
 import org.keycloak.adapters.ServerRequest;
 import org.keycloak.jose.jws.JWSInput;
+import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.IDToken;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.keycloak.util.KeycloakUriBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.ServerExtension;
 import org.sonar.api.config.Settings;
-import org.sonar.api.security.UserDetails;
-
+/**
+ * 
+ * @author Mohammad Nadeem
+ *
+ */
 public class KeycloakClient implements ServerExtension {
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(KeycloakClient.class);
 	public static final String REFERER_ATTRIBUTE = KeycloakClient.class.getName() + ".referer";
+	public static final String REFREASH_TOKEN_ATTRIBUTE = KeycloakClient.class.getName() + ".refreash";
 	
 	private static final String KEYCLOAK_SERVER_URL = "sonar.keycloak.auth.serverlUrl";
 	private static final String KEYCLOAK_REALM = "sonar.keycloak.realm";
@@ -50,10 +59,11 @@ public class KeycloakClient implements ServerExtension {
 	private static final String KEYCLOAK_SECRET = "sonar.keycloak.secret";
 	private static final String KEYCLOAK_JSON = "sonar.keycloak.json";
 
-	public static final String KEYCLOAK_USER_ATTRIBUTE = "keycloak_user";
+	public static final String KEYCLOAK_AUTHENTICATION_ATTRIBUTE = "keycloak_user";
 	
 	public static final String SONAR_VALIDATE_URL = "/keycloak/validate";
 	public static final String SONAR_UN_AUTHORIZED_URL = "/keycloak/unauthorized";
+	public static final String SONAR_LOG_OUT_URL = "/sessions/logout";
 
 	private Settings sonarSettings;
 
@@ -131,21 +141,29 @@ public class KeycloakClient implements ServerExtension {
 		return redirect;
 	}
 
-	public UserDetails getUser(HttpServletRequest request) throws Exception {
+	public KeycloakAuthentication getKeycloakAuthentication(HttpServletRequest request) throws Exception {
 		String redirect = redirectUrl(request);
-		UserDetails userDetails = null;
 
 		AccessTokenResponse tokenResponse = ServerRequest.invokeAccessCodeToToken(keycloakDeployment, request.getParameter("code"), redirect, null);
 		String idTokenString = tokenResponse.getIdToken();
+		String refreashToken = tokenResponse.getRefreshToken();
+		String tokenString = tokenResponse.getToken();
+		AccessToken token = RSATokenVerifier.verifyToken(tokenString, keycloakDeployment.getRealmKey(), keycloakDeployment.getRealm());
 
 		if (idTokenString != null) {
 			JWSInput input = new JWSInput(idTokenString);
 			IDToken idToken = input.readJsonContent(IDToken.class);
-			userDetails = new UserDetails();
-			userDetails.setEmail(idToken.getEmail());
-			userDetails.setName(idToken.getPreferredUsername());
-		}
-		return userDetails;		
+			return new KeycloakAuthentication(idToken, token, refreashToken);
+		} 
+		throw new RuntimeException("Invalid User ");
+	}
+
+	public void logOut(HttpServletRequest request) {
+		try {
+			ServerRequest.invokeLogout(this.keycloakDeployment, (String) request.getSession().getAttribute(REFREASH_TOKEN_ATTRIBUTE));			
+		} catch (Exception e) {
+			LOGGER.error("Logout Exception ", e);
+		}	
 	}
 
 	public KeycloakDeployment getKeycloakDeployment() {

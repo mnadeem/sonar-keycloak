@@ -31,12 +31,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.security.UserDetails;
 import org.sonar.api.web.ServletFilter;
 
 /**
  * Validate tokens forwarded by the keycloak  after the request initiated by {@link KeycloakAuthenticationFilter}.
  * If authenfication is successful, then object of type UserDetails is added to request attributes.
+ * 
+ * @author Mohammad Nadeem
+ * 
  */
 public final class KeycloakValidationFilter extends ServletFilter {
 	
@@ -59,17 +61,17 @@ public final class KeycloakValidationFilter extends ServletFilter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 	    HttpServletResponse httpResponse = (HttpServletResponse) response;
-		
-		UserDetails user = null;
+
+		KeycloakAuthentication authentication = null;
 		try {
-			user = this.keycloakClient.getUser(httpRequest);
+			authentication = this.keycloakClient.getKeycloakAuthentication(httpRequest);
 		} catch (Exception e) {
 			LOGGER.error("Can't get user ", e);
 		}
-		if (user == null) {
+		if (authentication == null) {
 			httpResponse.sendRedirect(KeycloakClient.SONAR_UN_AUTHORIZED_URL);
 		} else {
-			request.setAttribute(KeycloakClient.KEYCLOAK_USER_ATTRIBUTE, user);
+			request.setAttribute(KeycloakClient.KEYCLOAK_AUTHENTICATION_ATTRIBUTE, authentication);
 			filterChain.doFilter(request, response);
 		}
 	}

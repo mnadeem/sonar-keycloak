@@ -28,7 +28,11 @@ import org.sonar.api.SonarPlugin;
 import org.sonar.api.config.Settings;
 
 import java.util.List;
-
+/**
+ * 
+ * @author Mohammad Nadeem
+ *
+ */
 public final class KeycloakPlugin extends SonarPlugin {
 
   public List getExtensions() {
@@ -53,6 +57,7 @@ public final class KeycloakPlugin extends SonarPlugin {
         extensions.add(KeycloakValidationFilter.class);
         extensions.add(KeycloakAuthenticationFilter.class);
         extensions.add(KeycloakUserProvider.class);
+        extensions.add(KeycloakLogoutFilter.class);
       }
       return extensions;
     }

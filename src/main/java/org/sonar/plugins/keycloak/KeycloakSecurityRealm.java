@@ -20,9 +20,14 @@
 package org.sonar.plugins.keycloak;
 
 import org.sonar.api.security.Authenticator;
+import org.sonar.api.security.ExternalGroupsProvider;
 import org.sonar.api.security.ExternalUsersProvider;
 import org.sonar.api.security.SecurityRealm;
-
+/**
+ * 
+ * @author Mohammad Nadeem
+ *
+ */
 public final class KeycloakSecurityRealm extends SecurityRealm {
 
   public static final String KEY = "keycloak";
@@ -36,6 +41,11 @@ public final class KeycloakSecurityRealm extends SecurityRealm {
   public ExternalUsersProvider getUsersProvider() {
     return new KeycloakUserProvider();
   }
+  
+  @Override
+	public ExternalGroupsProvider getGroupsProvider() {		
+		return super.getGroupsProvider();
+	}
 
   @Override
   public String getName() {
