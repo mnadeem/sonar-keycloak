@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.keycloak;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +48,7 @@ public class KeycloakClient implements ServerExtension {
 	private static final String KEYCLOAK_RESOURCE = "sonar.keycloak.resource";
 	private static final String KEYCLOAK_SSL_REQUIRED = "sonar.keycloak.sslRequired";
 	private static final String KEYCLOAK_SECRET = "sonar.keycloak.secret";
+	private static final String KEYCLOAK_JSON = "sonar.keycloak.json";
 
 	public static final String KEYCLOAK_USER_ATTRIBUTE = "keycloak_user";
 	
@@ -62,7 +65,7 @@ public class KeycloakClient implements ServerExtension {
 	}
 
 	private void init() {
-		this.keycloakDeployment = KeycloakDeploymentBuilder.build(newAdapterConfig());
+		this.keycloakDeployment = KeycloakDeploymentBuilder.build(new BufferedInputStream(new ByteArrayInputStream(getKeycloakJson().getBytes())));
 	}
 
 	private AdapterConfig newAdapterConfig() {
@@ -91,6 +94,10 @@ public class KeycloakClient implements ServerExtension {
 	
 	private String getResource() {
 		return sonarSettings.getString(KEYCLOAK_RESOURCE);
+	}
+	
+	private String getKeycloakJson() {
+		return sonarSettings.getString(KEYCLOAK_JSON);
 	}
 	
 	private String getClientSecret() {
