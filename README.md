@@ -1,14 +1,13 @@
-Sonar Keycloak Plugin
+##Sonar Keycloak Plugin
 ===
 
-# this property must be set to true
+##### this property must be set to true
 sonar.authenticator.createUsers=true
 
-# enable Keycloak plugin
+##### enable Keycloak plugin
 sonar.security.realm=keycloak
 
-PLUGIN PROPERTIES
-===================
+#####PLUGIN PROPERTIES
 
 Copy the keycloak.json and paste as value for sonar.keycloak.json it here removing the new lines, as can be seen here
 
