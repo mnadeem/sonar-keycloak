@@ -1,5 +1,7 @@
 ##Sonar Keycloak Plugin
 
+ ![Keycloak Sonar](https://raw.githubusercontent.com/mnadeem/sonar-keycloak/master/sonar-keycloak.png)
+
 ##### this property must be set to true
 sonar.authenticator.createUsers=true
 
