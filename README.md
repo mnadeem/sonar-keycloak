@@ -1,5 +1,4 @@
 ##Sonar Keycloak Plugin
-===
 
 ##### this property must be set to true
 sonar.authenticator.createUsers=true
