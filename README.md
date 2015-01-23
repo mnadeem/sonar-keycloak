@@ -14,3 +14,4 @@ Copy the keycloak.json and paste as value for sonar.keycloak.json it here removi
 
 sonar.keycloak.json={  "realm": "demo",  "realm-public-key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCjZ1tsS98VEvcoMXm5HpTlWwHCETjjf1jy3ghZw0UBiAkk60myeRb1LHO64H45b7Cfup8zdZVf67vcgYC4f60pYa0/no2RnsZyp785q4lmoxScmyaGlmSsX+6tg7gUqYx9VOnWsIuCLNoAto3JCM+9VxFMN2yG3q3240hzkPiskQIDAQAB",  "auth-server-url": "http://localhost:8080/auth",  "ssl-required": "external",  "resource": "sonar",  "credentials": {    "secret": "70b6fff9-ec46-4ce3-b949-08a0528a3bf4"  }}
 
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mnadeem/sonar-keycloak/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
